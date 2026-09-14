@@ -629,10 +629,16 @@ if page == "Candidate Assessment":
                 else:
                     email_status = "Not requested"
                     if send_email:
+                        smtp_settings = {}
+                        try:
+                            smtp_settings = {key: st.secrets.get(key) for key in ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USERNAME', 'SMTP_PASSWORD', 'SMTP_FROM_EMAIL']}
+                        except (FileNotFoundError, st.errors.StreamlitSecretNotFoundError):
+                            pass
                         ok, email_status = send_report_email(
                             profile.student_email,
                             f"{INSTITUTE_NAME} | Complete Assessment Report - {profile.candidate_name}",
                             result_text(profile, result, summary),
+                            deployment_settings=smtp_settings,
                         )
                         (st.success if ok else st.warning)(email_status)
                     next_follow_up_date = '' if follow_up_frequency == 'No follow-up' else next_follow_up_date if use_custom_closure_date else date.today() + timedelta(days=default_days[follow_up_frequency])

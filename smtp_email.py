@@ -7,16 +7,17 @@ from pathlib import Path
 from dotenv import dotenv_values
 
 
-def send_report_email(to_email, subject, body):
+def send_report_email(to_email, subject, body, deployment_settings=None):
     values = dotenv_values(Path(__file__).with_name('.env'))
+    deployment_settings = deployment_settings or {}
     def setting(key, default=''):
-        return (os.getenv(key) or values.get(key) or default).strip()
+        return str(deployment_settings.get(key) or os.getenv(key) or values.get(key) or default).strip()
     host = setting('SMTP_HOST')
     username = setting('SMTP_USERNAME')
-    password = os.getenv('SMTP_PASSWORD') or values.get('SMTP_PASSWORD') or ''
+    password = deployment_settings.get('SMTP_PASSWORD') or os.getenv('SMTP_PASSWORD') or values.get('SMTP_PASSWORD') or ''
     sender = setting('SMTP_FROM_EMAIL')
     if not all([host, username, password, sender]):
-        return False, 'SMTP settings missing. Set SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD and SMTP_FROM_EMAIL in .env.'
+        return False, 'SMTP settings missing. Set SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD and SMTP_FROM_EMAIL in Streamlit Secrets or local .env.'
     try:
         port = int(setting('SMTP_PORT', '587'))
         if not 1 <= port <= 65535: raise ValueError()
