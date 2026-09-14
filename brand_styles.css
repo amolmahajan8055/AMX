@@ -1,0 +1,32 @@
+/* CodeKerdos: navy structure, cyan accents, white surfaces. */
+:root { --ck-navy: #19243f; --ck-cyan: #00b8ee; --ck-border: #e1e7ef; }
+.stApp { background: #fff; }
+.stApp [data-testid="stMainBlockContainer"] { max-width: 1320px; padding-top: 4.5rem; padding-bottom: 3rem; }
+h1, h2, h3 { color: var(--ck-navy); letter-spacing: -0.025em; }
+h1 { font-size: 2rem !important; font-weight: 700 !important; }
+h3 { font-size: 1.15rem !important; }
+.ck-brand { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 72px; padding: 12px 0; margin: 0 0 1rem; box-sizing: border-box; overflow: visible; }
+.ck-brand-mark { width: 7px; height: 28px; border-radius: 2px; background: var(--ck-cyan); }
+.ck-brand-name { color: var(--ck-navy); display: block; font-size: 32px; font-weight: 700; letter-spacing: -0.4px; line-height: 1.5; padding: 2px 0; text-align: center; overflow: visible; }
+.ck-brand-rule { height: 1px; background: var(--ck-border); margin: 0.3rem 0 1.2rem; }
+.stApp [data-testid="stCaptionContainer"] { color: #5b677c; }
+.stApp [data-testid="stForm"] { border: 1px solid var(--ck-border); border-radius: 10px; padding: 1.5rem; background: #fff; }
+.stApp [data-testid="stMetric"] { background: #f3f6fa; border: 1px solid var(--ck-border); border-top: 3px solid var(--ck-cyan); border-radius: 7px; padding: 14px 18px; }
+.stApp [data-testid="stMetricValue"] { color: var(--ck-navy); font-size: 1.5rem; }
+.stApp [data-testid="stTabs"] [role="tablist"] { gap: 24px; border-bottom: 1px solid var(--ck-border); }
+.stApp [data-testid="stTabs"] [role="tab"] { color: #5b677c; padding: 10px 0; }
+.stApp [data-testid="stTabs"] [aria-selected="true"] { color: var(--ck-navy); font-weight: 650; }
+.stApp [data-testid="stTabs"] [data-baseweb="tab-highlight"] { background: var(--ck-cyan); }
+.stApp button[kind="primary"], .stApp button[kind="primaryFormSubmit"] { background: var(--ck-navy); color: #fff; border: 1px solid var(--ck-navy); border-radius: 6px; box-shadow: none; }
+.stApp button[kind="primary"]:hover, .stApp button[kind="primaryFormSubmit"]:hover { background: #26395d; border-color: #26395d; }
+.stApp button[kind="secondary"], .stApp button[kind="secondaryFormSubmit"] { border-color: #cdd6e3; border-radius: 6px; color: var(--ck-navy); }
+.stApp button:focus-visible { outline: 3px solid var(--ck-cyan); outline-offset: 3px; }
+.stApp [data-testid="stAlert"][data-baseweb="notification"] { border-radius: 7px; }
+.stApp [data-testid="stAlertContainer"] { border-radius: 7px; }
+.stApp [data-testid="stExpander"] { border-color: var(--ck-border); border-radius: 7px; }
+.stApp a { color: #007da8; }
+@media (max-width: 640px) {
+  .stApp [data-testid="stMainBlockContainer"] { padding: 4rem 1rem 2rem; }
+  .stApp [data-testid="stForm"] { padding: 1rem; }
+  h1 { font-size: 1.6rem !important; }
+}
