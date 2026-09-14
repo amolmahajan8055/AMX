@@ -143,3 +143,9 @@ Candidates see their submitted profile/self-ratings and every assessment questio
 ## Current staff email option: SMTP
 
 Staff can check **Email report to student** when saving a call record. This sends the complete report in the message and as a TXT attachment using SMTP. Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and `SMTP_FROM_EMAIL` in `.env`. Port 587 uses STARTTLS; port 465 uses implicit TLS. The current checkbox uses SMTP, not Brevo. Downloading remains available without email settings.
+
+## Streamlit deployment admin login
+
+In the deployed app's Settings > Secrets, add `ADMIN_PASSWORD = "your-private-password-of-at-least-12-characters"`. Sign in with ID `admin`. The secret configures an existing or new admin account; changing the secret resets its password and revokes prior admin sessions. Never commit `.env`, `admin_setup.txt`, databases or `.streamlit/secrets.toml`. Local password resets do not update the deployed database.
+
+Streamlit-hosted local SQLite storage can be lost when the app is rebuilt. Use persistent external storage before relying on the deployment for long-term candidate records and sales accounts.

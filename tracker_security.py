@@ -48,6 +48,23 @@ class TrackerStore:
                 salt = secrets.token_hex(16)
                 db.execute('INSERT INTO users(id,name,role,salt,digest,referral) VALUES(?,?,?,?,?,?)',(uid,name,'sales',salt,self.password_hash(secrets.token_urlsafe(24),salt),secrets.token_urlsafe(24)))
             BOOTSTRAP_PATH.write_text(f'CodeKerdos admin setup\nSales ID: admin\nPassword: {password}\n\nSign in, change the admin password, then remove this file. Generate the ten sales passwords in Account Management.\n',encoding='utf-8')
+    def configure_admin(self, password):
+        """Apply a deployment secret once, or reset when the secret changes."""
+        if len(password) < 12:
+            raise ValueError('ADMIN_PASSWORD must contain at least 12 characters')
+        with self.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            user = db.execute("SELECT salt FROM users WHERE id='admin' AND role='admin'").fetchone()
+            if not user:
+                raise ValueError('Admin account not initialized')
+            fingerprint = self.password_hash(password, user['salt'])
+            previous = db.execute("SELECT value FROM settings WHERE key='admin_secret'").fetchone()
+            if previous and hmac.compare_digest(previous[0], fingerprint):
+                return
+            db.execute("UPDATE users SET digest=?,failures=0,locked_until=0 WHERE id='admin'", (fingerprint,))
+            db.execute("DELETE FROM sessions WHERE user_id='admin'")
+            db.execute("INSERT OR REPLACE INTO settings VALUES('admin_secret',?)", (fingerprint,))
+
     def login(self, uid, password):
         uid = uid.strip().lower()
         with self.connect() as db:

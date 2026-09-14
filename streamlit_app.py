@@ -165,6 +165,13 @@ st.markdown('<div class="ck-brand-rule"></div>', unsafe_allow_html=True)
 
 store = TrackerStore()
 store.bootstrap()
+admin_password = os.getenv('ADMIN_PASSWORD')
+try:
+    admin_password = st.secrets.get('ADMIN_PASSWORD') or admin_password
+except (FileNotFoundError, st.errors.StreamlitSecretNotFoundError):
+    pass
+if admin_password:
+    store.configure_admin(admin_password)
 store.import_legacy(CALL_RECORDS_FILE)
 staff = store.identity(st.session_state.get("staff_token"))
 with st.sidebar:

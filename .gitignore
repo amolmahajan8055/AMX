@@ -6,3 +6,6 @@ data/call_records.csv
 data/private_tracker.sqlite3*
 data/admin_setup.txt
 *.log
+
+.streamlit/secrets.toml
+.publish-amx/
