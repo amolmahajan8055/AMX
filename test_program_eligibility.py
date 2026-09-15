@@ -32,24 +32,33 @@ class EligibilityTests(unittest.TestCase):
         for item in reversed(self.patches): item.stop()
         self.folder.cleanup()
 
-    def test_one_month_requires_project(self):
+    def test_score_band_boundaries_with_required_criteria(self):
         engine = CareerAssessmentEngine()
-        self.assertEqual(engine.recommend(profile(), mcq())['recommended_path'], PROGRAM_2M)
-        self.assertEqual(engine.recommend(profile(has_relevant_project=True), mcq())['recommended_path'], PROGRAM_1M)
-        self.assertEqual(engine.recommend(profile(has_relevant_project=True, project_experience='Built a RAG chatbot; implemented retrieval and evaluation.'), mcq())['recommended_path'], PROGRAM_1M)
+        intensive = profile(has_relevant_project=True, growth_preference='Aggressive growth', weekly_commitment='10+ hours/week', challenge_readiness='Yes, I want to push myself')
+        consistent = profile(has_relevant_project=True, growth_preference='Normal growth', weekly_commitment='4-6 hours/week', challenge_readiness='Yes, with support')
+        self.assertEqual(engine.recommend(intensive, mcq(overall=80))['recommended_path'], PROGRAM_1M)
+        self.assertEqual(engine.recommend(intensive, mcq(overall=79.9))['recommended_path'], PROGRAM_2M)
+        self.assertEqual(engine.recommend(consistent, mcq(overall=70))['recommended_path'], PROGRAM_2M)
+        self.assertEqual(engine.recommend(consistent, mcq(overall=69.9))['recommended_path'], PROGRAM_FDE)
+        self.assertEqual(engine.recommend(consistent, mcq(overall=50))['recommended_path'], PROGRAM_FDE)
+        self.assertEqual(engine.recommend(consistent, mcq(overall=49.9))['recommended_path'], PROGRAM_GENAI)
 
-    def test_two_month_boundaries_and_weak_candidates(self):
+    def test_score_alone_cannot_unlock_short_programs(self):
         engine = CareerAssessmentEngine()
-        for changes in ({}, {'overall':49.9}, {'foundation':49.9}, {'genai':49.9}):
-            scores = dict(overall=50, foundation=50, genai=50, production=20)
-            scores.update(changes)
-            expected = PROGRAM_2M if not changes else PROGRAM_GENAI
-            self.assertEqual(engine.recommend(profile(**{f.name:10 for f in fields(CandidateProfile) if f.name.endswith('_score')}), mcq(**scores))['recommended_path'], expected)
+        no_project = profile(has_relevant_project=False, has_deployed_ai=False)
+        low_commitment = profile(has_relevant_project=True, weekly_commitment='2-3 hours/week')
+        low_agility = profile(has_relevant_project=True, growth_preference='Learn and implement steadily')
+        low_intensity = profile(has_relevant_project=True, challenge_readiness='Normal pace')
+        for candidate in (no_project, low_commitment, low_agility, low_intensity):
+            self.assertEqual(engine.recommend(candidate, mcq(overall=90))['recommended_path'], PROGRAM_FDE)
 
-    def test_production_gaps_block_one_month(self):
-        p = profile(has_relevant_project=True, project_experience='Built an agent')
-        self.assertEqual(CareerAssessmentEngine().recommend(p, mcq(production=59))['recommended_path'], PROGRAM_2M)
-        self.assertEqual(CareerAssessmentEngine().recommend(p, mcq(categories={'A':40,'B':40,'C':40}))['recommended_path'], PROGRAM_2M)
+    def test_eighty_plus_can_fall_back_to_two_months(self):
+        engine = CareerAssessmentEngine()
+        candidate = profile(has_relevant_project=True, growth_preference='Normal growth', weekly_commitment='4-6 hours/week', challenge_readiness='Yes, with support')
+        result = engine.recommend(candidate, mcq(overall=85))
+        self.assertEqual(result['recommended_path'], PROGRAM_2M)
+        self.assertTrue(result['short_program_criteria']['two_month_ready'])
+        self.assertFalse(result['short_program_criteria']['one_month_ready'])
 
     def test_direct_enrollment_is_only_four_months(self):
         engine = CareerAssessmentEngine()

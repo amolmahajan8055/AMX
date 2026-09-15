@@ -110,15 +110,16 @@ The final AI/LLM layer explains the result; it does not decide the course.
 
 ## Accelerator eligibility and direct enrollment
 
-The one- and two-month accelerators are prioritized when their prerequisites are met:
+The assessment score establishes the readiness band, while practical exposure and behavioral readiness determine whether a short intensive program is suitable:
 
-- Two months: at least 50% each in overall, foundation and applied GenAI assessment scores. This path includes building projects from scratch.
-- One month: at least 70% overall and 60% each in foundations, applied GenAI and production, fewer than three weak categories, plus reported chatbot/RAG/agent project experience. The project description is optional.
-- Candidates below the short-program prerequisites are routed to a four-month foundation program. Preference, self-ratings and a short switch timeline cannot override prerequisites.
+- 80% and above: 1-Month Interview Accelerator when the candidate also has high learning agility, relevant project/deployment exposure, 7-10+ weekly hours and willingness to push intensively.
+- 70%-79%: 2-Month Career Accelerator when the candidate also has good learning agility, practical exposure, at least 4-6 weekly hours and readiness for consistent additional effort.
+- 50%-69%: 4-Month FDE Program for deeper hands-on engineering, deployment, production and client-facing exposure.
+- Below 50%: 4-Month Data Science / GenAI Foundation Program for structured learning from the basics.
 
-Candidates can select either four-month program without a technical test or self-ratings. The report marks readiness as not assessed, and call records store empty objective scores with the direct enrollment status in the report JSON. The advisor can record enrollment through the existing call closure fields; choosing a program alone does not complete enrollment or payment. Project descriptions are self-reported and should be reviewed by the advisor.
+Candidates scoring 80% or higher who meet the two-month criteria but not the more intensive one-month criteria receive the two-month recommendation. Candidates in a short-program score band who do not meet its non-score requirements receive the four-month FDE recommendation. Score or self-rating alone never unlocks a short program.
 
-Run focused validation with `python -m unittest test_program_eligibility`.
+Candidates can still select either four-month program without a technical test. The report marks readiness as not assessed.
 
 ## Private sales tracker
 

@@ -208,30 +208,49 @@ class CareerAssessmentEngine:
         commitment = self._commitment_score(p.weekly_commitment)
         challenge = self._challenge_score(p.challenge_readiness)
         growth = self._growth_score(p.growth_preference)
-        project_ready = p.has_relevant_project
-        # Favor the shortest suitable path, with objective and project prerequisites.
-        if (overall >= 70 and foundation >= 60 and genai_obj >= 60
-                and production >= 60 and project_ready and len(weak_categories) < 3):
+        practical_exposure = p.has_relevant_project or p.has_deployed_ai
+        high_learning_agility = growth >= 85
+        good_learning_agility = growth >= 55
+        significant_effort = commitment >= 80 and challenge >= 100
+        consistent_effort = commitment >= 55 and challenge >= 70
+        one_month_ready = high_learning_agility and significant_effort and practical_exposure
+        two_month_ready = good_learning_agility and consistent_effort and practical_exposure
+
+        # Score establishes the readiness band; behavioral and practical evidence
+        # determines whether a short, intensive program is suitable.
+        if overall >= 80 and one_month_ready:
             recommendation = self.PROGRAM_1M
             reason = (
-                "Your assessment demonstrates strong working knowledge and you have reported relevant chatbot, RAG or agent project experience. "
-                "Prioritize the one-month path to turn that experience into convincing project storylines, technical interview answers and optimized profiles."
+                "Your assessment shows strong technical understanding. Your learning approach, weekly commitment, "
+                "readiness to work intensively and practical project exposure support a focused one-month interview accelerator."
             )
-        elif overall >= 50 and foundation >= 50 and genai_obj >= 50:
+        elif overall >= 70 and two_month_ready:
             recommendation = self.PROGRAM_2M
             reason = (
-                "Your assessment demonstrates at least 50% working knowledge across the overall test, foundations and applied GenAI. "
-                "Prioritize the two-month accelerator to build projects from scratch and close development, deployment, monitoring and security gaps, "
-                "then prepare project storylines and interviews. "
-                + ("Your reported project experience gives you a useful starting point." if project_ready else
-                   "You still need to build a relevant project, so the project-building phase is essential before interview acceleration.")
+                "Your assessment shows a good technical foundation. Your consistent weekly commitment, learning agility, "
+                "effort readiness and practical project exposure support a two-month path combining project work and interview preparation."
             )
+        elif overall >= 50:
+            recommendation = self.PROGRAM_FDE
+            if overall >= 70:
+                missing = []
+                if not practical_exposure: missing.append("practical or project exposure")
+                if not good_learning_agility: missing.append("learning agility")
+                if not consistent_effort: missing.append("consistent weekly commitment and intensive-work readiness")
+                reason = (
+                    "Your technical score is within a short-program range, but the short programs also require "
+                    + ", ".join(missing) + ". The four-month FDE path provides deeper hands-on engineering, deployment and client-facing exposure."
+                )
+            else:
+                reason = (
+                    "Your assessment shows a moderate technical foundation. The four-month FDE path is best suited to deepen "
+                    "hands-on engineering, deployment, production and client-facing capability."
+                )
         else:
-            recommendation = self.PROGRAM_FDE if self._fde_intent(p) else self.PROGRAM_GENAI
+            recommendation = self.PROGRAM_GENAI
             reason = (
-                "The short programs require at least 50% demonstrated knowledge overall, in foundations and in applied GenAI. "
-                "Your assessment has not met all these prerequisites. Start with the four-month foundation path to build the technical base and hands-on experience. "
-                "Choosing a short program or reporting high self-ratings alone does not establish eligibility."
+                "Your assessment indicates significant gaps in core fundamentals. The four-month Data Science / GenAI Foundation path "
+                "provides structured learning from the basics before advanced engineering and interview preparation."
             )
 
         preference_match = p.initial_program_preference == recommendation
@@ -252,6 +271,14 @@ class CareerAssessmentEngine:
             "assessment_status": "Completed",
             "project_experience": p.project_experience,
             "has_relevant_project": p.has_relevant_project,
+            "short_program_criteria": {
+                "practical_exposure": practical_exposure,
+                "learning_agility": "high" if high_learning_agility else "good" if good_learning_agility else "developing",
+                "consistent_effort": consistent_effort,
+                "significant_effort": significant_effort,
+                "one_month_ready": one_month_ready,
+                "two_month_ready": two_month_ready,
+            },
             "recommended_path": recommendation,
             "program_description": PROGRAM_DESCRIPTIONS[recommendation],
             "why_this_recommendation": reason,

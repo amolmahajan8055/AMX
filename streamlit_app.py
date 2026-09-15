@@ -333,7 +333,7 @@ if page == "Candidate Assessment":
                         index=1,
                     )
                     growth_preference = st.selectbox(
-                        "Preferred growth approach",
+                        "Learning agility / preferred growth approach",
                         ["Learn and implement steadily", "Normal growth", "Aggressive growth", "Career switch as fast as realistically possible"],
                         index=1,
                     )
