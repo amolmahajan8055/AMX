@@ -5,6 +5,7 @@ import ssl
 from email.message import EmailMessage
 from pathlib import Path
 from dotenv import dotenv_values
+from email_html import report_html
 
 
 def send_report_email(to_email, subject, body, deployment_settings=None):
@@ -27,7 +28,8 @@ def send_report_email(to_email, subject, body, deployment_settings=None):
     message['Subject'] = subject
     message['From'] = sender
     message['To'] = to_email
-    message.set_content(body)
+    message.set_content(body.replace("**", ""))
+    message.add_alternative(report_html(body), subtype="html")
     message.add_attachment(body.encode('utf-8'), maintype='text', subtype='plain', filename='complete_assessment_report.txt')
     try:
         context = ssl.create_default_context()

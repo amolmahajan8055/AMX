@@ -344,7 +344,7 @@ class CareerAssessmentEngine:
                 "Month 4: Architecture decisions, client communication, project storylines, system design, profile optimization and mock interviews",
             ]
         return [
-            "Month 1: Complete foundations in Python, SQL, data science, machine learning, NLP and deep learning",
+            "Month 1: Complete foundations in Python, data science, machine learning and neural networks, NLP and deep learning",
             "Month 2: GenAI concepts, Transformers, LLMs, prompt engineering, RAG and vector search",
             "Month 3: Hands-on project development, agents, MCP, evaluation, deployment, monitoring and security",
             "Month 4: End-to-end projects, project storylines, resume, LinkedIn and Naukri optimization and mock interviews",
